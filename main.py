@@ -5,7 +5,7 @@ from math import ceil
 url_nba = "http://www.basketball-reference.com/leagues/NBA_20{:02}_{}.html"
 url_player = "http://www.basketball-reference.com/players/{}"
 stats = ["totals", "advanced"]
-seasons = range(5, 7)
+seasons = range(5, 16)
 
 #######################################################################################
 ###############                                                         ###############
