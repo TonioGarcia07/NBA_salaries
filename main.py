@@ -5,7 +5,7 @@ from math import ceil
 url_nba = "http://www.basketball-reference.com/leagues/NBA_20{:02}_{}.html"
 url_player = "http://www.basketball-reference.com/players/{}"
 stats = ["totals", "advanced"]
-seasons = range(5, 16)
+seasons = range(5, 7)
 
 #######################################################################################
 ###############                                                         ###############
@@ -53,11 +53,15 @@ players = []
 cont = 0
 for pseudo, link in player_links.items():
     player = {}
+    player['pseudo'] = pseudo
     time.sleep(0.1)
     print 'Player {}: {} of {}...'.format(pseudo, cont, len(player_links.keys()))
     soup_stat = BeautifulSoup(urllib.urlopen(url_player.format(link)).read(), "lxml")
 
     ########################################################### Salary
+    for ss in seasons:
+        player['salary{:02}'.format(ss)] = None
+        
     try:
         soup_season = soup_stat.find('div', {'id':'all_all_salaries'})
         comments = soup_season.findAll(text=lambda text:isinstance(text, Comment))
@@ -67,23 +71,22 @@ for pseudo, link in player_links.items():
             for soup_salary in soup_comment.find_all('td', {'data-stat':'salary'}):
                 if season_text in soup_salary.parent.find('th').text:
                     player['salary{:02}'.format(ss)] = soup_salary.text
-                break
                     
     except Exception, e:
         print e, "Filling salary with None..."
-        for ss in seasons:
-            player['salary{:02}'.format(ss)] = None
+        
         
     cont += 1
     players.append(player)
 
     ############################################# Save every 250 iterations
-    if cont % 250 == 0 or cont == len(player_links.keys()):
+    if cont % 10 == 0 or cont == len(player_links.keys()):
         print "Pouring the data into the file stats.csv..."
-        with open('stats{}.csv'.format(int(ceil(cont/200))), 'wb') as fout:
+        with open('stats{}.csv'.format(int(ceil(cont/10))), 'wb') as fout:
             csvout = csv.writer(fout)
             
             headers = players[0].keys()
+            print headers
                     
             csvout.writerow(headers)
             for player in players:
