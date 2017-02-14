@@ -6,7 +6,7 @@ url_nba = "http://www.basketball-reference.com/leagues/NBA_20{:02}_{}.html"
 url_player = "http://www.basketball-reference.com/players/{}"
 stats = ["totals", "advanced"]
 seasons = range(5, 16)
-"""
+
 #######################################################################################
 ###############                                                         ###############
 ###############     Creation of the total and advanced stat tables      ###############
@@ -92,7 +92,9 @@ for pseudo, link in player_links.items()[]:
             for player in players:
                 csvout.writerow(player.values())
             players = []
-"""
+
+
+
 #######################################################################################
 ###############                                                         ###############
 ###############           Concatenation of the tables salary            ###############
