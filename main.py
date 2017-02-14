@@ -51,7 +51,7 @@ for stat in stats:
 
 players = []
 cont = 0
-for pseudo, link in player_links.items():
+for pseudo, link in player_links.items()[]:
     player = {}
     player['pseudo'] = pseudo
     time.sleep(0.1)
@@ -80,9 +80,9 @@ for pseudo, link in player_links.items():
     players.append(player)
 
     ############################################# Save every 250 iterations
-    if cont % 10 == 0 or cont == len(player_links.keys()):
+    if cont % 250 == 0 or cont == len(player_links.keys()):
         print "Pouring the data into the file stats.csv..."
-        with open('stats{}.csv'.format(int(ceil(cont/10))), 'wb') as fout:
+        with open('stats{}.csv'.format(int(ceil(cont/250))), 'wb') as fout:
             csvout = csv.writer(fout)
             
             headers = players[0].keys()
