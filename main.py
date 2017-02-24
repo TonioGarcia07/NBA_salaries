@@ -7,6 +7,7 @@ url_player = "http://www.basketball-reference.com/players/{}"
 stats = ["totals", "advanced"]
 seasons = range(5, 16)
 
+
 #######################################################################################
 ###############                                                         ###############
 ###############     Creation of the total and advanced stat tables      ###############
@@ -31,7 +32,7 @@ for stat in stats:
             player['season'] = "{:02}/{:02}".format(season-1, season)
 
             for el in player_soup.parent.find_all('td', {'data-stat':re.compile('.+')}):
-                player[el["data-stat"]] = el.text.replace("\n", '')
+                player[el["data-stat"]] = el.text.replace("\n", '')        
             
             players.append(player)
 
@@ -51,7 +52,7 @@ for stat in stats:
 
 players = []
 cont = 0
-for pseudo, link in player_links.items()[]:
+for pseudo, link in player_links.items():
     player = {}
     player['pseudo'] = pseudo
     time.sleep(0.1)
@@ -74,8 +75,56 @@ for pseudo, link in player_links.items()[]:
                     
     except Exception, e:
         print e, "Filling salary with None..."
+
+
+    ############################### Additional time-invariant information
+    soup_info = soup_stat.find('div', {'class':'players'})
+    player['college'] = None
+    player['shoots'] = None
+    player['debut'] = None
+    player['height'] = None
+    player['weight'] = None
+    try:
+        for tag_p in soup_info.find_all('p'):
+            ########## College
+            try:
+                if "College" in tag_p.text:
+                    college = tag_p.find('a').text
+                    player['college'] = college
+            
+            except Exception, e:pass
+
+
+            ########## Shoots
+            try:
+                if "Shoots" in tag_p.text:
+                    shoots = str(tag_p.contents[-1])
+                    player['shoots'] = shoots.replace(" ","").replace("\n","")
+            
+            except Exception, e:pass
+
         
-        
+            ########## NBA debut
+            try:
+                if "NBA Debut" in tag_p.text:
+                    debut = tag_p.find('a').text
+                    player['debut'] = debut[-4:]
+            
+            except Exception, e:pass
+
+
+            ########## Height and Weight
+            try:
+                for soup_span in tag_p.find('span', {'itemprop': 'height'}):
+                    height = tag_p.contents[-1].split('cm')[0][-3:]
+                    weight = tag_p.contents[-1].split('kg')[0][-3:].replace(u'\xa0', u'')
+                    player['height'] = height
+                    player['weight'] = weight
+            
+            except Exception, e:pass
+
+    except Exception, e:pass
+    
     cont += 1
     players.append(player)
 
@@ -86,7 +135,6 @@ for pseudo, link in player_links.items()[]:
             csvout = csv.writer(fout)
             
             headers = players[0].keys()
-            print headers
                     
             csvout.writerow(headers)
             for player in players:
@@ -102,7 +150,7 @@ for pseudo, link in player_links.items()[]:
 #######################################################################################
 
 res = []
-for i in range(1, 6):
+for i in range(1, 5):
     with open('stats{}.csv'.format(i), 'rb') as fin:
         cont = fin.readlines()
         if i==1: res.append(cont[0])
@@ -112,5 +160,4 @@ for i in range(1, 6):
 with open('salaries.csv', 'wb') as fout:
     for row in res:
         fout.write(row)
-
 
